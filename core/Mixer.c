@@ -66,7 +66,7 @@ static int covox_volume = 100;
 static int mixer_filter = 0;
 static int tia_filter = 0;
 
-static double blip_sample_rate = 48000.0;
+static double blip_sample_rate = 192000.0;
 
 double simple_lowpass_filter_l(double input)
 {
