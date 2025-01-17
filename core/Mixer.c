@@ -72,28 +72,28 @@ double simple_lowpass_filter_l(double input)
 {
 /* note: gentle can lower volume by octave but harsh cutoff can add artifacts */
 
-	static double previous_output = 0;
-	static double cutoff_freq = 22000.0;  /* 20 [mp3-320] or 22 [m4a-500] or flac [none] */
-	static double pi = 3.141592653589793;
+    static double previous_output = 0;
+    static double cutoff_freq = 22000.0;  /* 20 [mp3-320] or 22 [m4a-500] or flac [none] */
+    static double pi = 3.141592653589793;
 
-	double alpha = 2 * pi * cutoff_freq / (double) blip_sample_rate;
-	//previous_output = (previous_output) * (1 - alpha) + input * alpha;
-	previous_output += alpha * (input - previous_output);
-	return previous_output;
+    double alpha = 2 * pi * cutoff_freq / (double) blip_sample_rate;
+    //previous_output = (previous_output) * (1 - alpha) + input * alpha;
+    previous_output += alpha * (input - previous_output);
+    return previous_output;
 }
 
 double simple_lowpass_filter_r(double input)
 {
 /* note: gentle can lower volume by octave but harsh cutoff can add artifacts */
 
-	static double previous_output = 0;
-	static double cutoff_freq = 22000.0;  /* 20 [mp3-320] or 22 [m4a-500] or flac [none] */
-	static double pi = 3.141592653589793;
+    static double previous_output = 0;
+    static double cutoff_freq = 22000.0;  /* 20 [mp3-320] or 22 [m4a-500] or flac [none] */
+    static double pi = 3.141592653589793;
 
-	double alpha = 2 * pi * cutoff_freq / (double) blip_sample_rate;
-	//previous_output = (previous_output) * (1 - alpha) + input * alpha;
-	previous_output += alpha * (input - previous_output);
-	return previous_output;
+    double alpha = 2 * pi * cutoff_freq / (double) blip_sample_rate;
+    //previous_output = (previous_output) * (1 - alpha) + input * alpha;
+    previous_output += alpha * (input - previous_output);
+    return previous_output;
 }
 
 void mixer_Reset(void)
@@ -152,7 +152,7 @@ void mixer_Run(int cycles)
          mixer_cycles--;
          mixer_cycles2 += mixer_rate;
       }
-	}
+    }
 }
 
 void mixer_SetMixerVolume(uint16_t volume)
@@ -208,10 +208,10 @@ void mixer_FrameEnd(void)
       left = (tia_buffer[index] * tia_volume) / 100;
 
       if (tia_filter)
-	  {
+      {
          left = ((tia_lowpass_mono * tia_filter_a) + (left * tia_filter_b)) >> 16;
-	     tia_lowpass_mono = left;
-	  }
+         tia_lowpass_mono = left;
+      }
 
 
       if (cartridge_pokey)
@@ -221,31 +221,31 @@ void mixer_FrameEnd(void)
 
 
       if (cartridge_bupchip)
-	  {
+      {
          left += (bupchip_buffer[index*2 + 0] * 2 * bupchip_volume) / 100;  /* 7f = max unscaled volume */
          right += (bupchip_buffer[index*2 + 1] * 2 * bupchip_volume) / 100;
-	  }
+      }
 
 
       if (cartridge_ym2151)
-	  {
+      {
          left += (ym2151_buffer[index*2 + 0] * 2 * bupchip_volume) / 100;  /* 7f = max unscaled volume */
          right += (ym2151_buffer[index*2 + 1] * 2 * bupchip_volume) / 100;
-	  }
+      }
 
 
-	  left = (left > 0x7FFF) ? 0x7FFF : left;
+      left = (left > 0x7FFF) ? 0x7FFF : left;
       right = (right > 0x7FFF) ? 0x7FFF : right;
 
 
       if (mixer_filter)
-	  {
+      {
          left = ((mixer_lowpass_left * mixer_filter_a) + (left * mixer_filter_b)) >> 16;
-	     mixer_lowpass_left = left;
+         mixer_lowpass_left = left;
 
          right = ((mixer_lowpass_right * mixer_filter_a) + (right * mixer_filter_b)) >> 16;
-	     mixer_lowpass_right = right;
-	  }
+         mixer_lowpass_right = right;
+      }
 
 
       mixer_buffer[index*2 + 0] = (int16_t) simple_lowpass_filter_l(left);
