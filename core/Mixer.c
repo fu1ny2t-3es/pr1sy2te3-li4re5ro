@@ -66,6 +66,34 @@ static int covox_volume = 100;
 static int mixer_filter = 0;
 static int tia_filter = 0;
 
+static double blip_sample_rate = 48000.0;
+
+double simple_lowpass_filter_l(double input)
+{
+/* note: gentle can lower volume by octave but harsh cutoff can add artifacts */
+
+	static double previous_output = 0;
+	static double cutoff_freq = 22000.0;  /* 20 [mp3-320] or 22 [m4a-500] or flac [none] */
+	static double pi = 3.141592653589793;
+
+	double alpha = 2 * pi * cutoff_freq / (double) blip_sample_rate;
+	previous_output = (previous_output) * (1 - alpha) + input * alpha;
+	return previous_output;
+}
+
+double simple_lowpass_filter_r(double input)
+{
+/* note: gentle can lower volume by octave but harsh cutoff can add artifacts */
+
+	static double previous_output = 0;
+	static double cutoff_freq = 22000.0;  /* 20 [mp3-320] or 22 [m4a-500] or flac [none] */
+	static double pi = 3.141592653589793;
+
+	double alpha = 2 * pi * cutoff_freq / (double) blip_sample_rate;
+	previous_output = (previous_output) * (1 - alpha) + input * alpha;
+	return previous_output;
+}
+
 void mixer_Reset(void)
 {
    mixer_cycles = 0;
@@ -218,7 +246,7 @@ void mixer_FrameEnd(void)
 	  }
 
 
-      mixer_buffer[index*2 + 0] = (int16_t) left;
-      mixer_buffer[index*2 + 1] = (int16_t) right;
+      mixer_buffer[index*2 + 0] = (int16_t) simple_lowpass_filter_l(left);
+      mixer_buffer[index*2 + 1] = (int16_t) simple_lowpass_filter_r(right);
    }
 }
