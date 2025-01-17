@@ -346,23 +346,23 @@ static void process_channel(int index, int mode)
    if ((pokey_audc[index] & POKEY_NOTPOLY5) | pokey_poly05[pokey_poly05Cntr])
    {
       switch(mode)
-	  {
-	  case 0:
+      {
+      case 0:
          pokey_output[index] ^= 1;
          break;
 
-	  case 1:
+      case 1:
          pokey_output[index] = pokey_poly04[pokey_poly04Cntr];
          break;
 
-	  case 2:
+      case 2:
          pokey_output[index] = pokey_poly09[pokey_poly09Cntr];
          break;
 
-	  case 3:
+      case 3:
          pokey_output[index] = pokey_poly17[pokey_poly17Cntr];
          break;
-	  }
+      }
    }
 }
 
@@ -401,15 +401,15 @@ void pokey_Run(int cycles)
 
       if (pokey_audc[index] & POKEY_PURE)
          volmode[index] = 0;
-	  else if (pokey_audc[index] & POKEY_POLY4)
+      else if (pokey_audc[index] & POKEY_POLY4)
          volmode[index] = 1;
-	  else if (pokey_audctl & POKEY_POLY9)
+      else if (pokey_audctl & POKEY_POLY9)
          volmode[index] = 2;
-	  else
+      else
          volmode[index] = 3;
    }
 
-	  
+      
    while (pokey_cycles >= 4)  /* Maria 1/4 tick*/
    {
       int clock_triggered = 0;
@@ -439,38 +439,38 @@ void pokey_Run(int cycles)
 
 
          if (hiclk1 && (joined12 || pokey_audf[0] > 0))  /* ultrasonic speed hack */
-	        inc_channel(0, joined12 ? 7 : 4);
+            inc_channel(0, joined12 ? 7 : 4);
 
          if (hiclk3 && (joined34 || pokey_audf[2] > 0))
-	        inc_channel(2, joined34 ? 7 : 4);
+            inc_channel(2, joined34 ? 7 : 4);
 
 
          if (clock_triggered)
-		 {
+         {
             if (!hiclk1)
-	           inc_channel(0, 1);
+               inc_channel(0, 1);
 
             if (!joined12)
                inc_channel(1, 1);
 
-		    if (!hiclk3)
-	           inc_channel(2, 1);
+            if (!hiclk3)
+               inc_channel(2, 1);
 
             if (!joined34)
                inc_channel(3, 1);
-		 }
+         }
       }
 
 
       if (*((uint32_t *) pokey_borrowCount) == 0)  /* no volume changes */
-	  {
+      {
          pokey_lpfCount[0]++;
          pokey_lpfCount[1]++;
          pokey_lpfCount[2]++;
          pokey_lpfCount[3]++;
 
-		 continue;
-	  }
+         continue;
+      }
 
 
       pokey_poly04Cntr = (pokey_poly04Cntr + poly_ticks) % POKEY_POLY4_SIZE;
@@ -481,7 +481,7 @@ void pokey_Run(int cycles)
 
 
       if (check_borrow(2))  /* ch3 */
-	  {
+      {
          if (joined34)
             inc_channel(3, 1);
          else
@@ -490,11 +490,11 @@ void pokey_Run(int cycles)
          process_channel(2, volmode[2]);
 
          pokey_filter[0] = (pokey_audctl & POKEY_CH1_FILTER) ? pokey_output[0] : 1;
-	  }
+      }
 
 
       if (check_borrow(3))  /* ch4 */
-	  {
+      {
          if (joined34)
             reset_channel(2);
 
@@ -504,14 +504,14 @@ void pokey_Run(int cycles)
          pokey_filter[1] = (pokey_audctl & POKEY_CH2_FILTER) ? pokey_output[1] : 1;
 
          /* irq4 */
-	  }
+      }
 
 
       if ((pokey_skctl & SK_TWOTONE) && (pokey_borrowCount[1] == 1))  /* ch1 */
          reset_channel(0);
-	
+    
       if (check_borrow(0))
-	  {
+      {
          if (joined12)
             inc_channel(1, 1);
 
@@ -521,11 +521,11 @@ void pokey_Run(int cycles)
          process_channel(0, volmode[0]);
 
          /* irq1 */
-	  }
+      }
 
 
       if (check_borrow(1))
-	  {
+      {
          if (joined12)
             reset_channel(0);  /* low counter */
 
@@ -533,11 +533,11 @@ void pokey_Run(int cycles)
          process_channel(1, volmode[1]);
 
          /* irq2 */
-	  }
+      }
 
 
       for (index = 0; index < 4; index++)
-	  {
+      {
          newvol = 0;
          if (volmask[index])
             newvol = ((pokey_output[index] ^ pokey_filter[index]) | volonly[index]) ? volmask[index] : 0;
@@ -547,13 +547,15 @@ void pokey_Run(int cycles)
             pokey_lpfCount[index]++;
 
          else
-		 {
+         {
             if (pokey_lpfCount[index] >= pokey_lowpass)  /* latch new value */
                pokey_lpfOld[index] = pokey_lpfNew[index];
 
             pokey_lpfCount[index] = 1;
             pokey_lpfNew[index] = newvol;
          }
+         
+         pokey_lpfOld[index] = newvol;
       }
    }
 
@@ -564,6 +566,7 @@ void pokey_Run(int cycles)
    pokey_poly17Cntr = (pokey_poly17Cntr + poly_ticks) % POKEY_POLY17_SIZE;
 
 
+#if 0
    for (index = 0; index < 4; index++)
    {
       if (pokey_lpfCount[index] >= pokey_lowpass)  /* latch new value */
@@ -571,6 +574,7 @@ void pokey_Run(int cycles)
 
       pokey_lpfCount[index] &= 0xfffff;
    }
+#endif
 }
 
 void pokey_Output(void)
@@ -615,7 +619,7 @@ void pokey_LoadState(void)
       pokey_borrowCount[index] = prosystem_ReadState8();
 
       pokey_lpfOld[index] = ((pokey_output[index] ^ pokey_filter[index]) || (pokey_audc[index] & POKEY_VOLUME_ONLY)) ? pokey_audc[index] & POKEY_VOLUME_MASK : 0;
-	  pokey_lpfNew[index] = pokey_lpfOld[index];
+      pokey_lpfNew[index] = pokey_lpfOld[index];
       pokey_lpfCount[index] = 0;
    }
 
