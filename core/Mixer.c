@@ -71,12 +71,15 @@ double simple_lowpass_filter_l(double input)
 /* note: gentle can lower volume by octave but harsh cutoff can add artifacts */
 
     static double previous_output = 0;
-    static double cutoff = 22000.0;  /* 20 [mp3-320] or 22 [m4a-500] or flac [none] */
+    static double cutoff = 20000.0;  /* 20 [mp3-320] or 22 [m4a-500] or flac [none] */
     static double pi = 3.141592653589793;
+    static double alpha = 0;
 
-	double RC = 1.0 / (cutoff * 2.0 * pi);
-	double dt = 1.0 / mixer_rate;
-    double alpha = dt / (RC + dt);
+    if( alpha == 0 ) {
+        double RC = 1.0 / (cutoff * 2.0 * pi);
+	    double dt = 1.0 / mixer_rate;
+        alpha = dt / (RC + dt);
+    }
 
     previous_output += alpha * (input - previous_output);
     return previous_output;
@@ -87,12 +90,15 @@ double simple_lowpass_filter_r(double input)
 /* note: gentle can lower volume by octave but harsh cutoff can add artifacts */
 
     static double previous_output = 0;
-    static double cutoff = 22000.0;  /* 20 [mp3-320] or 22 [m4a-500] or flac [none] */
+    static double cutoff = 20000.0;  /* 20 [mp3-320] or 22 [m4a-500] or flac [none] */
     static double pi = 3.141592653589793;
+    static double alpha = 0;
 
-	double RC = 1.0 / (cutoff * 2.0 * pi);
-	double dt = 1.0 / mixer_rate;
-    double alpha = dt / (RC + dt);
+    if( alpha == 0 ) {
+        double RC = 1.0 / (cutoff * 2.0 * pi);
+	    double dt = 1.0 / mixer_rate;
+        alpha = dt / (RC + dt);
+    }
 
     previous_output += alpha * (input - previous_output);
     return previous_output;
