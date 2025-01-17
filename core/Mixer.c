@@ -74,7 +74,7 @@ double simple_lowpass_filter_l(double input)
     static double cutoff = 22000.0;  /* 20 [mp3-320] or 22 [m4a-500] or flac [none] */
     static double pi = 3.141592653589793;
 
-	static double RC = 1.0 / (cutoff * 2 * pi);
+	double RC = 1.0 / (cutoff * 2.0 * pi);
 	double dt = 1.0 / mixer_rate;
     double alpha = dt / (RC + dt);
 
@@ -90,7 +90,7 @@ double simple_lowpass_filter_r(double input)
     static double cutoff = 22000.0;  /* 20 [mp3-320] or 22 [m4a-500] or flac [none] */
     static double pi = 3.141592653589793;
 
-	static double RC = 1.0 / (cutoff * 2 * pi);
+	double RC = 1.0 / (cutoff * 2.0 * pi);
 	double dt = 1.0 / mixer_rate;
     double alpha = dt / (RC + dt);
 
