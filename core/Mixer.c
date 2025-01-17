@@ -77,7 +77,8 @@ double simple_lowpass_filter_l(double input)
 	static double pi = 3.141592653589793;
 
 	double alpha = 2 * pi * cutoff_freq / (double) blip_sample_rate;
-	previous_output = (previous_output) * (1 - alpha) + input * alpha;
+	//previous_output = (previous_output) * (1 - alpha) + input * alpha;
+	previous_output += alpha * (input - previous_output);
 	return previous_output;
 }
 
@@ -90,7 +91,8 @@ double simple_lowpass_filter_r(double input)
 	static double pi = 3.141592653589793;
 
 	double alpha = 2 * pi * cutoff_freq / (double) blip_sample_rate;
-	previous_output = (previous_output) * (1 - alpha) + input * alpha;
+	//previous_output = (previous_output) * (1 - alpha) + input * alpha;
+	previous_output += alpha * (input - previous_output);
 	return previous_output;
 }
 
