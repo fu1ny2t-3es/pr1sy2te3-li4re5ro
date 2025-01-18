@@ -554,8 +554,6 @@ void pokey_Run(int cycles)
             pokey_lpfCount[index] = 1;
             pokey_lpfNew[index] = newvol;
          }
-         
-         pokey_lpfOld[index] = newvol;
       }
    }
 
