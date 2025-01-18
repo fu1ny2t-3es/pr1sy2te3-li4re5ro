@@ -66,6 +66,36 @@ static int covox_volume = 100;
 static int mixer_filter = 0;
 static int tia_filter = 0;
 
+double ButterworthLowpassFilter_192_20_6th_l(double input)
+{
+    static double xv[7] = {0.0}, yv[7] = {0.0};
+
+    xv[6] = xv[5]; xv[5] = xv[4]; xv[4] = xv[3]; xv[3] = xv[2]; xv[2] = xv[1]; xv[1] = xv[0];
+    xv[0] = input;
+    yv[6] = yv[5]; yv[5] = yv[4]; yv[4] = yv[3]; yv[3] = yv[2]; yv[2] = yv[1]; yv[1] = yv[0];
+    yv[0] = 1.0 * (xv[0] + xv[6]) + 6.0 * (xv[1] + xv[5]) + 15.0 * (xv[2] + xv[4]) + 20.0 * xv[3]
+                + ( 8293.744 * yv[1]) + ( -12834.010 * yv[2])
+                + ( 11062.515 * yv[3]) + ( -5550.154 * yv[4])
+                + ( 1526.960 * yv[5]) + ( -179.204 * yv[6]);
+    yv[0] /= 2383.851;
+    return yv[0];
+}
+
+double ButterworthLowpassFilter_192_20_6th_r(double input)
+{
+    static double xv[7] = {0.0}, yv[7] = {0.0};
+
+    xv[6] = xv[5]; xv[5] = xv[4]; xv[4] = xv[3]; xv[3] = xv[2]; xv[2] = xv[1]; xv[1] = xv[0];
+    xv[0] = input;
+    yv[6] = yv[5]; yv[5] = yv[4]; yv[4] = yv[3]; yv[3] = yv[2]; yv[2] = yv[1]; yv[1] = yv[0];
+    yv[0] = 1.0 * (xv[0] + xv[6]) + 6.0 * (xv[1] + xv[5]) + 15.0 * (xv[2] + xv[4]) + 20.0 * xv[3]
+                + ( 8293.744 * yv[1]) + ( -12834.010 * yv[2])
+                + ( 11062.515 * yv[3]) + ( -5550.154 * yv[4])
+                + ( 1526.960 * yv[5]) + ( -179.204 * yv[6]);
+    yv[0] /= 2383.851;
+    return yv[0];
+}
+
 double simple_lowpass_filter_l(double input)
 {
 /* note: gentle can lower volume by octave but harsh cutoff can add artifacts */
@@ -256,7 +286,7 @@ void mixer_FrameEnd(void)
       }
 
 
-      mixer_buffer[index*2 + 0] = (int16_t) simple_lowpass_filter_l(left);
-      mixer_buffer[index*2 + 1] = (int16_t) simple_lowpass_filter_r(right);
+      mixer_buffer[index*2 + 0] = (int16_t) ButterworthLowpassFilter_192_20_6th_l(left);
+      mixer_buffer[index*2 + 1] = (int16_t) ButterworthLowpassFilter_192_20_6th_r(right);
    }
 }
