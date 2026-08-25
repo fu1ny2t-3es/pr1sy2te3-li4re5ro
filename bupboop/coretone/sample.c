@@ -130,8 +130,13 @@ int32_t ct_sample_setup(uint8_t *pSamplePak)
 	 * word matches what we expect, the sample count is below our limit,
 	 * and it's living at a 32-Bit aligned address.
 	 */
+<<<<<<< HEAD
 	if(0 != (uintptr_t)pSamplePak % sizeof(uint32_t))
 	{
+=======
+	uint32_t uiY = (uint32_t)pSamplePak;
+	if(0 != (uiY % sizeof(uint32_t)))
+>>>>>>> 73a2ad1 (Create a.yml)
 		return -1;
 	}
 

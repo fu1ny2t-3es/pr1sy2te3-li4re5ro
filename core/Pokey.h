@@ -42,6 +42,7 @@
 #ifndef POKEY_H
 #define POKEY_H
 
+<<<<<<< HEAD
 #define POKEY_BUFFER_SIZE 624
 #define POKEY_AUDF1 0x4000
 #define POKEY_AUDC1 0x4001
@@ -53,21 +54,58 @@
 #define POKEY_AUDC4 0x4007
 #define POKEY_AUDCTL 0x4008
 #define POKEY_SKCTL  0x4009
+=======
+#define POKEY_AUDF1  0x0
+#define POKEY_AUDC1  0x1
+#define POKEY_AUDF2  0x2
+#define POKEY_AUDC2  0x3
+#define POKEY_AUDF3  0x4
+#define POKEY_AUDC3  0x5
+#define POKEY_AUDF4  0x6
+#define POKEY_AUDC4  0x7
+#define POKEY_AUDCTL 0x8
+#define POKEY_STIMER 0x9
+#define POKEY_SKRES  0xa
+#define POKEY_POTGO  0xb
+#define POKEY_SEROUT 0xd
+#define POKEY_IRQEN  0xe
+#define POKEY_SKCTLS 0xf
+
+#define POKEY_POT0   0x0
+#define POKEY_POT1   0x1
+#define POKEY_POT2   0x2
+#define POKEY_POT3   0x3
+#define POKEY_POT4   0x4
+#define POKEY_POT5   0x5
+#define POKEY_POT6   0x6
+#define POKEY_POT7   0x7
+#define POKEY_ALLPOT 0x8
+#define POKEY_KBCODE 0x9
+#define POKEY_RANDOM 0xa
+#define POKEY_SERIN  0xd
+#define POKEY_IRQST  0xe
+#define POKEY_SKSTAT 0xf
+>>>>>>> ba98f8e (Create a.yml)
 
 #include <stdint.h>
+#include "Mixer.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+extern void pokey_SetLowpass(int rate);
+
 extern void pokey_Reset(void);
-extern void pokey_SetRegister(uint16_t address, uint8_t value);
-extern void pokey_Process(uint32_t length);
-extern void pokey_Clear(void);
+extern uint8_t pokey_Read(uint16_t address);
+extern void pokey_Write(uint16_t address, uint8_t value);
 
-extern uint8_t pokey_buffer[POKEY_BUFFER_SIZE];
-extern uint32_t pokey_size;
+extern void pokey_Frame(void);
+extern void pokey_Run(int cycles);
+extern void pokey_Scanline(void);
+extern void pokey_Output(void);
 
+<<<<<<< HEAD
 extern uint32_t pokey_soundCntr;
 extern uint8_t pokey_audf[4];
 extern uint8_t pokey_audc[4];
@@ -86,6 +124,13 @@ extern uint32_t pokey_sampleCount[2];
 extern uint32_t pokey_baseMultiplier;
 extern uint8_t pokey_skctl;
 extern uint8_t pokey_filterSample[2];
+=======
+extern void pokey_LoadState(void);
+extern void pokey_SaveState(void);
+
+extern int16_t pokey_buffer[MAX_SOUND_SAMPLES];
+extern int pokey_outCount;
+>>>>>>> ba98f8e (Create a.yml)
 
 #ifdef __cplusplus
 }
