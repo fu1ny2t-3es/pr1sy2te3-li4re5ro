@@ -64,8 +64,13 @@ int32_t ct_instr_setup(uint8_t *pInstrPak)
 	 *
 	 * Nothing elaborate, assuming good intentions with the data we're given.
 	 */
+<<<<<<< HEAD
 	if(0 != (uintptr_t)pInstrPak % sizeof(uint32_t))
 	{
+=======
+	uint32_t uiY = (uint32_t)pInstrPak;
+	if(0 != (uiY % sizeof(uint32_t)))
+>>>>>>> 40921f8 (Create a.yml)
 		return -1;
 	}
 

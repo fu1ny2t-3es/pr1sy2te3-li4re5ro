@@ -26,6 +26,32 @@
 #include "Database.h"
 #include "Cartridge.h"
 
+#ifdef WIN32
+  #define strcasecmp stricmp  
+  #define strncasecmp strnicmp
+#endif
+
+#define MAPPER_EXRAM 0x0001  /* 16K ram */
+#define MAPPER_EXRAM_A8 0x0002  /* 2K mirror */
+#define MAPPER_EXRAM_M2 0x0004  /* halt ram */
+#define MAPPER_EXROM 0x0008  /* extra 16K rom */
+#define MAPPER_EXFIX 0x0010  /* lastbank-1 rom */
+#define MAPPER_EXRAM_X2 0x0020  /* page ram */
+#define MAPPER_BANKSET 0x0040  /* halt rom */
+
+#define AUDIO_POKEY_440 0x0001
+#define AUDIO_POKEY_450 0x0002
+#define AUDIO_POKEY_440_450 0x0004
+#define AUDIO_POKEY_800 0x0008
+#define AUDIO_POKEY_4000 0x0010
+#define AUDIO_ADPCM_420 0x0020
+#define AUDIO_COVOX_430 0x0040
+#define AUDIO_YM2151_460 0x0080
+#define AUDIO_BUPCHIP 0x0100
+#define AUDIO_POKEY1_IRQ 0x0200
+#define AUDIO_POKEY2_IRQ 0x0400
+#define AUDIO_YM2151_IRQ 0x0800
+
 void database_Initialize(void) { }
 
 typedef struct cartridge_db
@@ -33,6 +59,7 @@ typedef struct cartridge_db
    char digest[256];
    char title[256];
    uint8_t type;
+<<<<<<< HEAD
    bool pokey;         /* legacy: true = POKEY at $4000 */
    uint8_t controller1;
    uint8_t controller2;
@@ -42,206 +69,107 @@ typedef struct cartridge_db
    int8_t crossy;
    uint8_t hblank;
    uint16_t pokey_address; /* explicit POKEY address; 0 falls back to pokey bool */
+=======
+   uint32_t mapper;
+   uint32_t audio;
+>>>>>>> c11344e (Create a.yml)
 } cartridge_db_t;
 
+
+/* auto-detect fail */
 static const struct cartridge_db db_list[] = 
 {
    {
-      "4332c24e4f3bc72e7fe1b77adf66c2b7",         /* digest */
-      "3D Asteroids",                             /* title */
-      0,                                          /* type */
-      false,                                      /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      0,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      0                                           /* hblank */
+      "8fc3a695eaea3984912d98ed4a543376",
+      "Ballblazer",
+      CARTRIDGE_TYPE_LINEAR,
+      0,
+      AUDIO_POKEY_4000
    },
    {
-      "0be996d25144966d5541c9eb4919b289",         /* digest */
-      "Ace Of Aces",                              /* title */
-      4,                                          /* type */
-      false,                                      /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      0,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      37,                                         /* hblank */
+      "b558814d54904ce0582e2f6a801d03af",
+      "Ballblazer (Europe)",
+      CARTRIDGE_TYPE_LINEAR,
+      0,
+      AUDIO_POKEY_4000
    },
    {
-      "aadde920b3aaba03bc10b40bd0619c94",         /* digest */
-      "Ace Of Aces",                              /* title */
-      4,                                          /* type */
-      false,                                      /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      1,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      37,                                         /* hblank */
+      "2e8e28f6ad8b9b9267d518d880c73ebb",
+      "Commando",
+      CARTRIDGE_TYPE_SUPERGAME,
+      0,
+      AUDIO_POKEY_4000
    },
    {
-      "877dcc97a775ed55081864b2dbf5f1e2",         /* digest */
-      "Alien Brigade",                            /* title */
-      2,                                          /* type */
-      false,                                      /* pokey */
-      3,                                          /* controller 1 */
-      3,                                          /* controller 2 */
-      0,                                          /* region */
-      0,                                          /* flags */
-      15,                                         /* crossx */
-      15,                                         /* crossy */
-      37                                          /* hblank */
+      "55da6c6c3974d013f517e725aa60f48e",
+      "Commando (Europe)",
+      CARTRIDGE_TYPE_SUPERGAME,
+      0,
+      AUDIO_POKEY_4000
    },
    {
-      "de3e9496cb7341f865f27e5a72c7f2f5",         /* digest */
-      "Alien Brigade",                            /* title */
-      2,                                          /* type */
-      false,                                      /* pokey */
-      3,                                          /* controller 1 */
-      3,                                          /* controller 2 */
-      1,                                          /* region */
-      0,                                          /* flags */
-      15,                                         /* crossx */
-      -20,                                        /* crossy */
-      37                                          /* hblank */
+      "543484c00ba233736bcaba2da20eeea9",
+      "Double Dragon",
+      CARTRIDGE_TYPE_ACTIVISION,
    },
    {
-      "404f95103b70975a42cb09946dc3adca",         /* digest */
-      "Apple Snaffle (Jul 17-Rev 24) (2009)",     /* title */
-      3,                                          /* type */
-      true,                                       /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      0,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      0                                           /* hblank */
+      "de2ebafcf0e37aaa9d0e9525a7f4dd62",
+      "Double Dragon (Europe)",
+      CARTRIDGE_TYPE_ACTIVISION,
    },
    {
-      "07342c78619ba6ffcc61c10e907e3b50",         /* digest */
-      "Asteroids",                                /* title */
-      0,                                          /* type */
-      false,                                      /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      0,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      0                                           /* hblank */
+      "2251a6a0f3aec84cc0aff66fc9fa91e8",
+      "F-18 Hornet",
+      CARTRIDGE_TYPE_ABSOLUTE,
    },
    {
-      "8fc3a695eaea3984912d98ed4a543376",         /* digest */
-      "Ballblazer",                               /* title */
-      0,                                          /* type */
-      true,                                       /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      0,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      28                                          /* hblank */
+      "e7709da8e49d3767301947a0a0b9d2e6",
+      "F-18 Hornet (Europe)",
+      CARTRIDGE_TYPE_ABSOLUTE,
    },
    {
-      "b558814d54904ce0582e2f6a801d03af",         /* digest */
-      "Ballblazer",                               /* title */
-      0,                                          /* type */
-      true,                                       /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      1,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      28                                          /* hblank */
+      "baebc9246c087e893dfa489632157180",
+      "Impossible Mission",
+      CARTRIDGE_TYPE_SUPERGAME,
+      MAPPER_EXRAM
    },
    {
-      "42682415906c21c6af80e4198403ffda",         /* digest */
-      "Barnyard Blaster",                         /* title */
-      1,                                          /* type */
-      true,                                       /* pokey */
-      2,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      0,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      10,                                         /* crossy */
-      0                                           /* hblank */
+      "80dead01ea2db5045f6f4443faa6fce8",
+      "Impossible Mission (Europe)",
+      CARTRIDGE_TYPE_SUPERGAME,
+      MAPPER_EXRAM
    },
    {
-      "babe2bc2976688bafb8b23c192658126",         /* digest */
-      "Barnyard Blaster",                         /* title */
-      1,                                          /* type */
-      true,                                       /* pokey */
-      2,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      1,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      12,                                         /* crossy */
-      0                                           /* hblank */
+      "045fd12050b7f2b842d5970f2414e912",
+      "Jinks",
+      CARTRIDGE_TYPE_SUPERGAME,
+      MAPPER_EXRAM
    },
    {
-      "f5f6b69c5eb4b55fc163158d1a6b423e",         /* digest */
-      "Basketbrawl",                              /* title */
-      4,                                          /* type */
-      false,                                      /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      0,                                          /* region */
-      1,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      0                                           /* hblank */
+      "dfb86f4d06f05ad00cf418f0a59a24f7",
+      "Jinks (Europe)",
+      CARTRIDGE_TYPE_SUPERGAME,
+      MAPPER_EXRAM
    },
    {
-      "fba002089fcfa176454ab507e0eb76cb",         /* digest */
-      "Basketbrawl",                              /* title */
-      4,                                          /* type */
-      false,                                      /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      1,                                          /* region */
-      1,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      0                                           /* hblank */
+      "86546808dc60961cdb1b20e761c50ab1",
+      "Plutos",
+      CARTRIDGE_TYPE_SUPERGAME,
+      MAPPER_EXRAM
    },
    {
-      "386bded4a944bae455fedf56206dd1dd",         /* digest */
-      "Baseball",                                 /* title */
-      0,                                          /* type */
-      false,                                      /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      1,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      0                                           /* hblank */
+      "1745feadabb24e7cefc375904c73fa4c",
+      "Possible Mission",
+      CARTRIDGE_TYPE_SUPERGAME,
+      MAPPER_EXRAM
    },
    {
-      "aefb78276913e8a166e460222e378fec",         /* digest */
-      "Beef Drop",                                /* title */
-      0,                                          /* type */
-      true,                                       /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      0,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      0                                           /* hblank */
+      "ac03806cef2558fc795a7d5d8dba7bc0",
+      "Rampage",
+      CARTRIDGE_TYPE_ACTIVISION
    },
    {
+<<<<<<< HEAD
       "00688131ee74f6c84048c7fa5c71114a",         /* digest */
       "Bentley Bear's Crystal Quest",             /* title */
       2,                                          /* type: SUPERCART_LARGE */
@@ -267,111 +195,65 @@ static const struct cartridge_db db_list[] =
       0,                                          /* crossx */
       0,                                          /* crossy */
       0                                           /* hblank */
+=======
+      "8f7eb10ad0bd75474abf0c6c36c08486",
+      "Rescue On Fractalus",
+      CARTRIDGE_TYPE_LINEAR,
+      MAPPER_EXRAM_A8
+>>>>>>> c11344e (Create a.yml)
    },
    {
-      "38c056a48472d9a9e16ebda5ed91dae7",         /* digest */
-      "Centipede",                                /* title */
-      0,                                          /* type */
-      false,                                      /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      1,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      0                                           /* hblank */
+      "592be737ce78a17a572d3bbd527c7a61",
+      "Rikki & Vikki (R12)",
+      CARTRIDGE_TYPE_SOUPER,
+      0,
+      AUDIO_BUPCHIP
    },
    {
-      "93e4387864b014c155d7c17877990d1e",         /* digest */
-      "Choplifter",                               /* title */
-      0,                                          /* type */
-      false,                                      /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      0,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      0                                           /* hblank */
+      "79d3fb83577cd3fd8d1542f58353cfcd",
+      "Rikki & Vikki (R13)",
+      CARTRIDGE_TYPE_SOUPER,
+      0,
+      AUDIO_BUPCHIP
    },
    {
-      "59d4edb0230b5acc918b94f6bc94779f",         /* digest */
-      "Choplifter",                               /* title */
-      0,                                          /* type */
-      false,                                      /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      1,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      0                                           /* hblank */
+      "b3bc889e9cc498636990c5a4d980e85c",
+      "Rikki & Vikki (R14)",
+      CARTRIDGE_TYPE_SOUPER,
+      0,
+      AUDIO_BUPCHIP
    },
    {
-      "2e8e28f6ad8b9b9267d518d880c73ebb",         /* digest */
-      "Commando",                                 /* title */
-      1,                                          /* type */
-      true,                                       /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      0,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      8                                           /* hblank */
+      "2d643ac548c40e58c99d0fe433ba4ba0",
+      "Sirius",
+      CARTRIDGE_TYPE_SUPERGAME,
+      MAPPER_EXRAM
    },
    {
-      "55da6c6c3974d013f517e725aa60f48e",         /* digest */
-      "Commando",                                 /* title */
-      1,                                          /* type */
-      true,                                       /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      1,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      8                                           /* hblank */
+      "cbb0746192540a13b4c7775c7ce2021f",
+      "Summer Games",
+      CARTRIDGE_TYPE_SUPERGAME,
+      MAPPER_EXRAM
    },
    {
-      "db691469128d9a4217ec7e315930b646",         /* digest */
-      "Crack'ed",                                 /* title */
-      1,                                          /* type */
-      false,                                      /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      0,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      0                                           /* hblank */
+      "8d64763db3100aadc552db5e6868506a",
+      "Tower Toppler",
+      CARTRIDGE_TYPE_SUPERGAME,
+      MAPPER_EXRAM
    },
    {
-      "7cbe78fa06f47ba6516a67a4b003c9ee",         /* digest */
-      "Crack'ed",                                 /* title */
-      1,                                          /* type */
-      false,                                      /* pokey */
-      1,                                          /* controller 1 */
-      1,                                          /* controller 2 */
-      1,                                          /* region */
-      0,                                          /* flags */
-      0,                                          /* crossx */
-      0,                                          /* crossy */
-      0                                           /* hblank */
+      "32a37244a9c6cc928dcdf02b45365aa8",
+      "Tower Toppler (Europe)",
+      CARTRIDGE_TYPE_SUPERGAME,
+      MAPPER_EXRAM
    },
    {
-      "a94e4560b6ad053a1c24e096f1262ebf",         /* digest */
-      "Crossbow",                                 /* title */
-      2,                                          /* type */
-      false,                                      /* pokey */
-      3,                                          /* controller 1 */
-      3,                                          /* controller 2 */
-      0,                                          /* region */
-      0,                                          /* flags */
-      15,                                         /* crossx */
-      10,                                         /* crossy */
-      0                                           /* hblank */
+      "3799d72f78dda2ee87b0ef8bf7b91186",
+      "Winter Games",
+      CARTRIDGE_TYPE_SUPERGAME,
+      MAPPER_EXRAM
    },
+<<<<<<< HEAD
    {
       "63db371d67a98daec547b2abd5e7aa95",         /* digest */
       "Crossbow",                                 /* title */
@@ -1764,7 +1646,95 @@ static const struct cartridge_db db_list[] =
       0,                                          /* crossy */
       0                                           /* hblank */
    }
+=======
+>>>>>>> c11344e (Create a.yml)
 };
+
+static void fixup(int index)
+{
+   uint32_t flags;
+
+
+   cartridge_type = db_list[index].type;
+
+
+   flags = db_list[index].mapper;
+
+   if (flags & MAPPER_BANKSET)
+      cartridge_bankset = 1;
+
+   if (flags & MAPPER_EXFIX)
+      cartridge_exfix = 1;
+
+   if (flags & MAPPER_EXROM)
+      cartridge_exrom = 1;
+
+   if (flags & MAPPER_EXRAM)
+      cartridge_exram = 1;
+
+   if (flags & MAPPER_EXRAM_M2)
+      cartridge_exram_m2 = 1;
+
+   if (flags & MAPPER_EXRAM_A8)
+      cartridge_exram_a8 = 1;
+
+   if (flags & MAPPER_EXRAM_X2)
+      cartridge_exram_x2 = 1;
+
+
+
+   flags = db_list[index].audio;
+
+   if (flags & AUDIO_POKEY_440)
+      cartridge_pokey = POKEY_AT_440;
+
+   if (flags & AUDIO_POKEY_450)
+      cartridge_pokey = POKEY_AT_450;
+
+   if (flags & AUDIO_POKEY_440_450)
+      cartridge_pokey = POKEY_AT_440_450;
+
+   if (flags & AUDIO_POKEY_800)
+      cartridge_pokey = POKEY_AT_800;
+
+   if (flags & AUDIO_POKEY_4000)
+      cartridge_pokey = POKEY_AT_4000;
+
+   if (flags & AUDIO_YM2151_460)
+      cartridge_ym2151 = YM2151_AT_460;
+
+   if (flags & AUDIO_BUPCHIP)
+      cartridge_bupchip = 1;
+
+
+   if (strstr(db_list[index].title, "(PAL)") ||
+	   strstr(db_list[index].title, "(Europe)"))
+      cartridge_region = 1;
+}
+
+static void detect(void)
+{
+   if (strstr(cartridge_title, "(PAL)") ||
+	   strstr(cartridge_title, "(Europe)"))
+      cartridge_region = 1;
+
+
+   if (cartridge_size < 0xe000)
+   {
+      cartridge_type = CARTRIDGE_TYPE_LINEAR;
+      return;
+   }
+
+
+   cartridge_type = CARTRIDGE_TYPE_SUPERGAME;
+
+   cartridge_exfix = 1;  /* common default */
+
+   if (cartridge_size == 0x20000 + 0x4000)
+      cartridge_exrom = 1;
+
+   /* ignore exram map as causes problems enough times */
+}
 
 void database_Load(const char *digest)
 {
@@ -1773,8 +1743,9 @@ void database_Load(const char *digest)
 
    for (i = 0; i < len; i++)
    {
-      if (!strcmp(db_list[i].digest, digest))
+      if (!strcasecmp(db_list[i].digest, digest))
       {
+<<<<<<< HEAD
          cartridge_type          = db_list[i].type;
          if(db_list[i].pokey_address)
             cartridge_pokey_address = db_list[i].pokey_address;
@@ -1784,7 +1755,12 @@ void database_Load(const char *digest)
          cartridge_controller[1] = db_list[i].controller2;
          cartridge_region        = db_list[i].region;
          cartridge_flags         = db_list[i].flags;
+=======
+         fixup(i);
+>>>>>>> c11344e (Create a.yml)
          return;
       }
    }
+
+   detect();
 }
